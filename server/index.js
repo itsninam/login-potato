@@ -29,6 +29,25 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const userExists = await UserModel.findOne({ email });
+    if (userExists) {
+      if (userExists.password === password) {
+        return res.status(201).json({ message: "Password matches" });
+      } else {
+        return res.status(400).json({ message: "Password does not match" });
+      }
+    } else {
+      return res.status(400).json({ message: "Account does not exist" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Internal error" });
+  }
+});
+
 app.listen(3001, () => {
   console.log("Server running");
 });

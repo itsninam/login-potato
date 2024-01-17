@@ -15,6 +15,10 @@ mongoose.connect(
 app.post("/signup", async (req, res) => {
   const { firstName, email, password } = req.body;
 
+  if (!firstName || !email || !password) {
+    return res.status(400).json({ message: "Please enter all fields!" });
+  }
+
   try {
     const userExists = await UserModel.findOne({ email });
     if (userExists) {
@@ -30,13 +34,20 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { firstName, email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Please enter all fields!" });
+  }
 
   try {
     const userExists = await UserModel.findOne({ email });
     if (userExists) {
       if (userExists.password === password) {
-        return res.status(201).json({ message: "Password matches" });
+        return res.status(201).json({
+          message: "Password matches",
+          user: userExists,
+        });
       } else {
         return res.status(400).json({ message: "Password does not match" });
       }
@@ -45,6 +56,17 @@ app.post("/login", async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({ message: "Internal error" });
+  }
+});
+
+app.get("/getUsers", async (req, res) => {
+  try {
+    const users = await UserModel.find({});
+    res.send(users);
+    console.log(users);
+  } catch (err) {
+    res.send(err);
+    console.log(err);
   }
 });
 

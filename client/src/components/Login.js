@@ -20,7 +20,7 @@ function Login() {
         password,
       });
       console.log(response);
-      navigate("/home");
+      navigate("/home", { state: response.data.user });
     } catch (error) {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.message);
